@@ -2,6 +2,8 @@ import { Global, Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './infra/database/prisma/prisma.module';
+import { PresenterModule } from './presentation/presenter.module';
+import { SharedModule } from './shared/shared.module';
 
 @Global()
 @Module({
@@ -10,7 +12,10 @@ import { PrismaModule } from './infra/database/prisma/prisma.module';
       isGlobal: true,
     }),
     PrismaModule,
+    // Comunicação com servidores externos
     HttpModule,
+    PresenterModule,
+    SharedModule,
   ],
   exports: [HttpModule],
 })
