@@ -1,10 +1,10 @@
 export class Usuario {
   id?: number;
   email: string;
-  senha: string;
+  password: string;
   categoriaId: number;
   clienteId: number;
-  funcionarioId: number;
+  funcionarioId?: number;
   createdAt?: Date;
   updatedAt?: Date;
   deletedAt?: Date;

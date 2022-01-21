@@ -12,7 +12,7 @@
  *  }
  */
 export abstract class BaseController<R> {
-  public abstract post?(...args: any): Promise<R>;
+  public abstract create?(...args: any): Promise<R>;
   public abstract get?(...args: any): Promise<R>[];
   public abstract findBy?(...args: any): Promise<R>;
   public abstract patch?(...args: any): Promise<R>;
