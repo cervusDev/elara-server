@@ -9,6 +9,6 @@
  * @template I, R
  */
 
-export abstract class Usecase<I, R> {
+export abstract class Usecase<I = never, R = I> {
   public abstract execute(input: I): Promise<R>;
 }
