@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { Usuario } from 'src/domain/usuario/entity/usuario.entity';
@@ -6,8 +7,20 @@ import { IUsuarioRepository } from 'src/domain/usuario/repository/user.repositor
 @Injectable()
 export class UsuarioPrismaRepository implements IUsuarioRepository {
   constructor(private readonly prisma: PrismaClient) {}
-
   public create(data: Usuario): Promise<Usuario> {
     return this.prisma.usuario.create({ data });
+  }
+
+  public update(id: number, data: Partial<Usuario>): Promise<Usuario> {
+    throw new Error('Method not implemented.');
+  }
+  public getById(id: number): Promise<Usuario> {
+    throw new Error('Method not implemented.');
+  }
+  public getAll(): Promise<Usuario[]> {
+    throw new Error('Method not implemented.');
+  }
+  public delete(id: number): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 }
