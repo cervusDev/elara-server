@@ -37,3 +37,5 @@
 
 ## Testes unitários    
 
+    - [x] Deve ser possível criar um usuário
+

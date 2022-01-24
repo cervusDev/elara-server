@@ -44,6 +44,7 @@ describe('CreateUsuarioDto', () => {
 
     const usuario = await sut.execute(MOCKUSUARIO.CREAT[0]);
 
-    expect(usuario).toBeTruthy();
+    const persist = await repository.getById(usuario.id);
+    expect(persist).toBeTruthy();
   });
 });

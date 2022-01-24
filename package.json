@@ -18,7 +18,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "prisma:dev": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "seed": "node --loader ts-node/esm src/infra/database/prisma/seed.ts"
   },
   "dependencies": {
     "@nestjs/axios": "^0.0.4",
@@ -64,16 +67,23 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
+    "rootDir": "test",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "../src/core/**/usecases/**/*.ts"
     ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>../src/$1",
+      "^infra/(.*)$": "<rootDir>../src/infra/$1",
+      "^domain/(.*)$": "<rootDir>../src/domain/$1",
+      "^shared/(.*)$": "<rootDir>../src/shared/$1",
+      "^presentation/(.*)$": "<rootDir>../src/presentation/$1"
+    }
   },
   "prisma": {
     "schema": "./src/infra/database/prisma/schema.prisma"
