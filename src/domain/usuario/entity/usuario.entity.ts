@@ -2,10 +2,9 @@ export class Usuario {
   id?: number;
   email: string;
   password: string;
-  categoriaId: number;
-  clienteId?: number;
-  funcionarioId?: number;
-  createdAt?: Date;
-  updatedAt?: Date;
-  deletedAt?: Date;
+  image?: string | null;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
+  deletedAt?: Date | string | null;
+  categoriaId?: number;
 }
