@@ -3,7 +3,7 @@ export class Usuario {
   email: string;
   password: string;
   categoriaId: number;
-  clienteId: number;
+  clienteId?: number;
   funcionarioId?: number;
   createdAt?: Date;
   updatedAt?: Date;

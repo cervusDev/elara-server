@@ -7,8 +7,22 @@ import { IUsuarioRepository } from 'src/domain/usuario/repository/user.repositor
 @Injectable()
 export class UsuarioPrismaRepository implements IUsuarioRepository {
   constructor(private readonly prisma: PrismaClient) {}
-  public create(data: Usuario): Promise<Usuario> {
-    return this.prisma.usuario.create({ data });
+  public create({
+    email,
+    password,
+    categoriaId,
+    clienteId,
+    ...rest
+  }: Usuario): Promise<Usuario> {
+    return this.prisma.usuario.create({
+      data: {
+        email,
+        ...rest,
+        password,
+        clienteId,
+        categoriaId,
+      },
+    });
   }
 
   public update(id: number, data: Partial<Usuario>): Promise<Usuario> {

@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 import { UsuarioRepository } from './providers/usuario';
 
 @Module({
-  providers: [UsuarioRepository],
+  providers: [UsuarioRepository, PrismaClient],
   exports: [UsuarioRepository],
 })
-export class SharedModule {}
+export class IocModule {}

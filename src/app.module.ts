@@ -3,7 +3,7 @@ import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './infra/database/prisma/prisma.module';
 import { PresenterModule } from './presentation/presenter.module';
-import { SharedModule } from './shared/shared.module';
+import { IocModule } from './ioc/ioc.module';
 
 @Global()
 @Module({
@@ -15,8 +15,8 @@ import { SharedModule } from './shared/shared.module';
     // Comunicação com servidores externos
     HttpModule,
     PresenterModule,
-    SharedModule,
+    IocModule,
   ],
-  exports: [HttpModule],
+  exports: [HttpModule, IocModule],
 })
 export class AppModule {}

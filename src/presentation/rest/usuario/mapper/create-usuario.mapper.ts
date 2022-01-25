@@ -9,9 +9,8 @@ export class CreateUsuarioMapper implements Mapper<CreateUsuarioDto, Usuario> {
     };
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   mapTo(entity: Usuario): CreateUsuarioDto {
-    return {
-      ...entity,
-    };
+    throw new Error('Method not implemented.');
   }
 }
