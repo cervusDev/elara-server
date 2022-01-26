@@ -4,6 +4,7 @@ import { Usecase } from 'src/abstract/usecase';
 import { Usuario } from '../entity/usuario.entity';
 import { IUsuarioRepository } from '../repository/user.repository';
 import { PROVIDER } from '../constants/provider';
+import { hashSync } from 'bcrypt';
 
 @Injectable()
 export class CreateUsusarioUsecase
@@ -13,7 +14,11 @@ export class CreateUsusarioUsecase
     @Inject(PROVIDER.USUARIOREPOSITORY)
     private readonly repository: IUsuarioRepository,
   ) {}
-  public async execute(input: CreateUsuarioDto): Promise<Usuario> {
-    return this.repository.create(input);
+  public async execute({
+    password,
+    ...rest
+  }: CreateUsuarioDto): Promise<Usuario> {
+    const hash = hashSync(password, 10);
+    return await this.repository.create({ password: hash, ...rest });
   }
 }
