@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcrypt';
-import { PROVIDER as USUARIO } from '../usuario/constants/provider';
-import { Usuario } from '../usuario/entity/usuario.entity';
-import { IUsuarioRepository } from '../usuario/repository/user.repository';
+import { PROVIDER as USUARIO } from '../../usuario/constants/provider';
+import { Usuario } from '../../usuario/entity/usuario.entity';
+import { IUsuarioRepository } from '../../usuario/repository/user.repository';
 
 interface IUserToken {
   sub: number;
