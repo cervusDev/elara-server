@@ -25,6 +25,22 @@ export class InMemoryRepository<
     return this.inmemoryData[count - 1];
   }
 
+  public async createMany(data: TEntity[]): Promise<TEntity[]> {
+    const newData = [];
+    data.forEach((item) => {
+      item.id =
+        this.inmemoryData.length > 0
+          ? this.inmemoryData.slice(-1)[0].id + 1
+          : 1;
+
+      item.createdAt = new Date();
+      item.updatedAt = new Date();
+      newData.push(item);
+      this.inmemoryData.push(item);
+    });
+    return newData;
+  }
+
   public async getAll(): Promise<TEntity[]> {
     return this.inmemoryData;
   }

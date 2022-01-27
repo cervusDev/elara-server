@@ -4,8 +4,8 @@ export class Usuario {
   name: string;
   password: string;
   image?: string;
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  deletedAt?: Date | string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+  deletedAt?: Date;
   categoriaId?: number;
 }
