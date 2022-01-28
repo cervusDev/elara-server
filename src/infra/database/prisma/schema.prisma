@@ -11,13 +11,678 @@ model Usuario {
   id             Int          @id @default(autoincrement())
   email          String
   password       String
-  image          String?
-  name           String       @unique
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   deletedAt      DateTime?
-  categoriaId    Int?
-  
+  categoriaId    Int
+  clienteId      Int?
+  funcionarioId  Int?
+  primeiroAcesso SN           @default(S)
+  Cliente        Cliente?     @relation(fields: [clienteId], references: [id])
+  Funcionario    Funcionario? @relation(fields: [funcionarioId], references: [id])
+
+  PerfisExibicao PerfisExibicao[]
+  @@index([clienteId], map: "usuarios_clienteId_fkey")
+  @@index([funcionarioId], map: "usuarios_funcionarioId_fkey")
   @@map("usuarios")
 }
 
+model Avaliacao {
+  id               Int              @id @default(autoincrement())
+  email            String
+  nomeResponsavel  String
+  telefone         String
+  dtFimAvaliacao   DateTime
+  virouCliente     SN?
+  funcaoId         Int
+  FuncoesAvaliacao FuncoesAvaliacao @relation(fields: [funcaoId], references: [id])
+  clienteId        Int
+  Cliente          Cliente          @relation(fields: [clienteId], references: [id])
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([clienteId], map: "avaliacoes_clienteId_fkey")
+  @@index([funcaoId], map: "avaliacoes_funcaoId_fkey")
+  @@map("avaliacoes")
+}
+
+model FuncoesAvaliacao {
+  id   Int    @id @default(autoincrement())
+  nome String
+
+  Avaliacao Avaliacao[]
+  @@map("funcoes_avaliacao")
+}
+
+model ParametrosAvaliacao {
+  id            Int      @id @default(autoincrement())
+  diasAvaliacao Int
+  estenderDias  Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("parametros_avaliacoes")
+}
+
+model FaixaColaborador {
+  id        Int      @id @default(autoincrement())
+  faixa     String
+  valor     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Cliente Cliente[]
+  @@map("faixa_colaboradores")
+}
+
+model Cliente {
+  id                        Int              @id @default(autoincrement())
+  razaoSocial               String?
+  nomeFantasia              String
+  cnpj                      String?
+  dataLiberacao             DateTime?
+  exportarFolhaFormatoHoras String?
+  repsConectados            Int?
+  totalFuncionarios         Int?
+  segmento                  Int?
+  outroSegmento             String?
+  nomeResponsavel           String
+  telefoneResponsavel       String
+  faixaColaboradoresId      Int
+  planoDiferenciado         SN?
+  valorMensalidade          Float?
+  createdAt                 DateTime         @default(now())
+  updatedAt                 DateTime         @updatedAt
+  emAvaliacao               SN
+  limiteFuncionarios        Int?
+  FaixaColaborador          FaixaColaborador @relation(fields: [faixaColaboradoresId], references: [id])
+
+  Avaliacao     Avaliacao[]
+  Empresa       Empresa[]
+  TabelaHorario TabelaHorario[]
+  Usuario       Usuario[]
+  Ocorrencias   Ocorrencia[]
+  @@index([faixaColaboradoresId], map: "clientes_faixaColaboradoresId_fkey")
+  @@map("customers")
+}
+
+model Empresa {
+  id                                  Int       @id @default(autoincrement())
+  cnpj                                String?   @unique
+  razaoSocial                         String?
+  nomeFantasia                        String
+  telefoneResponsavel                 String?
+  email                               String    @unique
+  telefone                            String?
+  cidadeId                            Int?
+  Cidades                             Cidade?   @relation(fields: [cidadeId], references: [id])
+  bairro                              String?
+  endereco                            String?
+  numero                              Int?
+  competenciaAtual                    String?
+  horarioEncerramentoAdicionalNoturno String?
+  diaInicioPonto                      Int?
+  codEmpresaFolha                     Int?
+  descricaoAutorizacao                String?
+  toleranciaDiariaFalta               String?
+  diasToleranciaMes                   Int?
+  prioridadeCompensacao               Int?
+  limiteAlteracaoDsr                  Int?
+  limiteAlteracaoRegistro             Int?
+  repsConectados                      Int?
+  totalFuncionarios                   Int?
+  createdAt                           DateTime  @default(now())
+  updatedAt                           DateTime  @updatedAt
+  deletedAt                           DateTime?
+  nomeResponsavel                     String?
+  clienteId                           Int
+  Cliente                             Cliente   @relation(fields: [clienteId], references: [id])
+  ramoAdicionalNoturno                Int?
+  celular                             String?
+
+  CompensacaoFeriados CompensacaoFeriado[]
+  CentroCustos        CentroCustos[]
+  Funcionario         Funcionario[]
+  regrasCalculo       RegrasCalculo[]
+  Locals              Locals[]
+  Registro            Registro[]
+  Reps                Rep[]
+  MotivosExclusao     MotivosExclusao[]
+  Abonos              Abono[]
+  Afastamentos        Afastamento[]
+  Calculo             Calculo[]
+  HistoricoImportacao HistoricoImportacao[]
+  @@index([clienteId], map: "empresas_clienteId_fkey")
+  @@map("empresas")
+}
+
+model Funcionario {
+  id                       Int           @id @default(autoincrement())
+  empresaId                Int
+  nome                     String
+  pis                      String
+  matricula                Int
+  matriculaFolha           Int?
+  dtNascimento             DateTime?
+  sexo                     Sexo?
+  nomeSocial               String?
+  regraCalculo             Int
+  dtAdmissao               DateTime?
+  dtRescisao               DateTime?
+  horasSemanais            String?
+  cidadeTrabalho           Int?
+  cpf                      String?
+  senha                    String?
+  turno                    String?
+  tabelaHorarioId          Int
+  controlarBancoHoras      SN?
+  horarioPorEscala         SN?
+  tipoEscala               Int?
+  expFolhaHorasExtras      SN?
+  expFolhaFaltas           SN?
+  expFolhaAdicionalNoturno SN?
+  entradaEntre231          SN?
+  funcionarioComissionado  SN?
+  desconsideraIntervalo    SN?
+  horarioNoturno           SN
+  prorrogarHorarioNoturno  SN?
+  abonarFinalDia           String?
+  naoTemHrsExtras          SN?
+  naoTemFaltas             SN?
+  naoTemAdicionalNoturno   SN?
+  horarioTrabalhoEspelho   String?
+  repCodigo                String?
+  repProximidade           String?
+  repCodBarras             String?
+  repSenha                 String?
+  repSupervisor            String?
+  registroApp              SN?
+  registroWeb              SN?
+  ajustesPonto             SN?
+  verSaldoHoras            SN?
+  centroCustoId            Int?
+  dtIniCentroCusto         DateTime?
+  dtFimCentroCusto         DateTime?
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
+  deletedAt                DateTime?
+  CentroCusto              CentroCustos? @relation(fields: [centroCustoId], references: [id])
+  Cidade                   Cidade?       @relation(fields: [cidadeTrabalho], references: [id])
+  Empresa                  Empresa       @relation(fields: [empresaId], references: [id])
+  RegrasCalculo            RegrasCalculo @relation(fields: [regraCalculo], references: [id])
+  TabelaHorarios           TabelaHorario @relation(fields: [tabelaHorarioId], references: [id])
+
+  Usuario             Usuario[]
+  Registro            Registro[]
+  Abonos              Abono[]
+  Afastamentos        Afastamento[]
+  CompensacaoFeriados CompensacaoFeriado[]
+  Calculo             Calculo[]
+  EspelhoPonto        EspelhoPonto[]
+  @@index([centroCustoId], map: "funcionarios_centroCustoId_fkey")
+  @@index([cidadeTrabalho], map: "funcionarios_cidadeTrabalho_fkey")
+  @@index([empresaId], map: "funcionarios_empresaId_fkey")
+  @@index([regraCalculo], map: "funcionarios_regraCalculo_fkey")
+  @@index([tabelaHorarioId], map: "funcionarios_tabelaHorarioId_fkey")
+  @@map("funcionarios")
+}
+
+model TabelaHorario {
+  id                Int       @id @default(autoincrement())
+  clienteId         Int
+  nome              String
+  codigo            Int?
+  entradaAntes      String?
+  entradaDepois     String?
+  saidaAntes        String?
+  saidaDepois       String?
+  toleranciaTurno   String?
+  toleranciaDia     String?
+  horarioPorExtenso String?
+  domEnt1           String?
+  domSai1           String?
+  domEnt2           String?
+  domSai2           String?
+  domEnt3           String?
+  domSai3           String?
+  segEnt1           String?
+  segSai1           String?
+  segEnt2           String?
+  segSai2           String?
+  segEnt3           String?
+  segSai3           String?
+  terEnt1           String?
+  terSai1           String?
+  terEnt2           String?
+  terSai2           String?
+  terEnt3           String?
+  terSai3           String?
+  quaEnt1           String?
+  quaSai1           String?
+  quaEnt2           String?
+  quaSai2           String?
+  quaEnt3           String?
+  quaSai3           String?
+  quiEnt1           String?
+  quiSai1           String?
+  quiEnt2           String?
+  quiSai2           String?
+  quiEnt3           String?
+  quiSai3           String?
+  sexEnt1           String?
+  sexSai1           String?
+  sexEnt2           String?
+  sexSai2           String?
+  sexEnt3           String?
+  sexSai3           String?
+  sabEnt1           String?
+  sabSai1           String?
+  sabEnt2           String?
+  sabSai2           String?
+  sabEnt3           String?
+  sabSai3           String?
+  domTra            SN?
+  domTot            String?
+  segTot            String?
+  terTot            String?
+  quaTot            String?
+  quiTot            String?
+  sexTot            String?
+  sabTot            String?
+  tolTur            String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  deletedAt         DateTime?
+  Cliente           Cliente   @relation(fields: [clienteId], references: [id])
+
+  Funcionario Funcionario[]
+  @@index([clienteId], map: "tabela_horarios_clienteId_fkey")
+  @@map("tabela_horarios")
+}
+
+model RegrasCalculo {
+  id                         Int       @id @default(autoincrement())
+  empresaId                  Int
+  nome                       String
+  segQtdPrimeirasHrs         String
+  segPorcentagemPrimeirasHrs Float
+  segCompensacaoPrimeirasHrs Int
+  segPorcentagemDemaisHrs    Float
+  segCompensacaoDemaisHrs    Int
+  terQtdPrimeirasHrs         String
+  terPorcentagemPrimeirasHrs Float
+  terCompensacaoPrimeirasHrs Int
+  terPorcentagemDemaisHrs    Float
+  terCompensacaoDemaisHrs    Int
+  quaQtdPrimeirasHrs         String
+  quaPorcentagemPrimeirasHrs Float
+  quaCompensacaoPrimeirasHrs Int
+  quaPorcentagemDemaisHrs    Float
+  quaCompensacaoDemaisHrs    Int
+  quiQtdPrimeirasHrs         String
+  quiPorcentagemPrimeirasHrs Float
+  quiCompensacaoPrimeirasHrs Int
+  quiPorcentagemDemaisHrs    Float
+  quiCompensacaoDemaisHrs    Int
+  sexQtdPrimeirasHrs         String
+  sexPorcentagemPrimeirasHrs Float
+  sexCompensacaoPrimeirasHrs Int
+  sexPorcentagemDemaisHrs    Float
+  sexCompensacaoDemaisHrs    Int
+  sabQtdPrimeirasHrs         String
+  sabPorcentagemPrimeirasHrs Float
+  sabCompensacaoPrimeirasHrs Int
+  sabPorcentagemDemaisHrs    Float
+  sabCompensacaoDemaisHrs    Int
+  domQtdPrimeirasHrs         String
+  domPorcentagemPrimeirasHrs Float
+  domCompensacaoPrimeirasHrs Int
+  domPorcentagemDemaisHrs    Float
+  domCompensacaoDemaisHrs    Int
+  ferQtdPrimeirasHrs         String
+  ferPorcentagemPrimeirasHrs Float
+  ferCompensacaoPrimeirasHrs Int
+  ferPorcentagemDemaisHrs    Float
+  ferCompensacaoDemaisHrs    Int
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime  @updatedAt
+  deletedAt                  DateTime?
+  Empresa                    Empresa   @relation(fields: [empresaId], references: [id])
+
+  Funcionario Funcionario[]
+  EspelhoPonto EspelhoPonto[]
+  @@index([empresaId], map: "regras_calculos_empresaId_fkey")
+  @@map("regras_calculos")
+}
+
+model CentroCustos {
+  id          Int      @id @default(autoincrement())
+  empresaId   Int
+  nome        String
+  nivel       String
+  digitoLivro String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Empresa     Empresa  @relation(fields: [empresaId], references: [id])
+
+  Funcionario Funcionario[]
+  @@index([empresaId], map: "centro_custos_empresaId_fkey")
+  @@map("centro_custos")
+}
+
+model Cidade {
+  id        Int      @id @default(autoincrement())
+  ibge      Int
+  cidade    String
+  uf        String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Funcionario Funcionario[]
+  Empresa     Empresa[]
+  @@map("cidades")
+}
+
+model ExibicaoPadraoTabela {
+  id        Int      @id @default(autoincrement())
+  tabela    String   @unique
+  colunas   Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  PerfisExibicao PerfisExibicao[]
+  @@map("exibicao_padrao_tabelas")
+}
+
+model PerfisExibicao {
+  id        Int                  @id @default(autoincrement())
+  usuarioId Int
+  nome      String
+  colunas   Json
+  tabela    String
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+  Tabela    ExibicaoPadraoTabela @relation(fields: [tabela], references: [tabela])
+  Usuario   Usuario              @relation(fields: [usuarioId], references: [id])
+
+  @@index([tabela], map: "perfis_exibicao_tabela_fkey")
+  @@index([usuarioId], map: "perfis_exibicao_usuarioId_fkey")
+  @@map("perfis_exibicao")
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Criar os Dominios
+
+model Locals {
+  id              Int      @id @default(autoincrement())
+  empresaId       Int
+  Empresa         Empresa  @relation(fields: [empresaId], references: [id])
+  nome            String
+  endereco        String
+  latitude        String
+  longitude       String
+  cercaEletronica String
+  pin             String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  Registro Registro[]
+  @@map("locals")
+}
+
+model Marca {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  createdAt DateTime @default(now())
+
+  Rep Rep[]
+  @@map("marcas")
+}
+
+model Rep {
+  id          Int      @id @default(autoincrement())
+  empresaId   Int
+  Empresa     Empresa  @relation(fields: [empresaId], references: [id])
+  marcaId     Int
+  Marca       Marca    @relation(fields: [marcaId], references: [id])
+  ip          String
+  porta       String
+  usuario     String
+  senha       String
+  ulimoNsr    Int
+  tipoConexao Conexao // [note: 'local, web']
+  numeroSerie String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  Registro Registro[]
+  @@map("reps")
+}
+
+model OrigensRegistro {
+  id   Int    @id @default(autoincrement())
+  nome String
+
+  Registro Registro[]
+  @@map("origens_registros")
+}
+
+model Registro {
+  id             Int             @id @default(autoincrement())
+  funcionarioId  Int
+  Funcionario    Funcionario     @relation(fields: [funcionarioId], references: [id])
+  hora           String
+  data           DateTime
+  origem         Int
+  OrigemRegistro OrigensRegistro @relation(fields: [origem], references: [id])
+  nsr            Int?
+  empresaId      Int
+  Empresa        Empresa         @relation(fields: [empresaId], references: [id])
+  repId          Int?
+  Rep            Rep?            @relation(fields: [repId], references: [id])
+  localId        Int?
+  Local          Locals?         @relation(fields: [localId], references: [id])
+  createdAt      DateTime        @default(now())
+  deletedAt      DateTime?
+
+  MotivosExclusao MotivosExclusao[]
+  @@map("registros")
+}
+
+model MotivosExclusao {
+  id                   Int                 @id @default(autoincrement())
+  empresaId            Int
+  Empresa              Empresa             @relation(fields: [empresaId], references: [id])
+  registroId           Int?
+  Registro             Registro?           @relation(fields: [registroId], references: [id])
+  abonoId              Int?
+  Abono                Abono?              @relation(fields: [abonoId], references: [id])
+  afastamentoId        Int?
+  Afastamento          Afastamento?        @relation(fields: [afastamentoId], references: [id])
+  compensacaoFeriadoId Int?
+  CompensacaoFeriado   CompensacaoFeriado? @relation(fields: [compensacaoFeriadoId], references: [id])
+  motivo               String
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  @@map("motivos_exclusao")
+}
+
+model Abono {
+  id              Int         @id @default(autoincrement())
+  empresaId       Int
+  Empresa         Empresa     @relation(fields: [empresaId], references: [id])
+  funcionarioId   Int
+  Funcionario     Funcionario @relation(fields: [funcionarioId], references: [id])
+  data            DateTime
+  quantidadeHoras String
+  justificativa   String
+  fileUrl         String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deletedAt       DateTime?
+
+  MotivosExclusao MotivosExclusao[]
+  EspelhoPonto    EspelhoPonto[]
+  @@map("abonos")
+}
+
+model CompensacaoFeriado {
+  id              Int         @id @default(autoincrement())
+  empresaId       Int
+  Empresa         Empresa     @relation(fields: [empresaId], references: [id])
+  funcionarioId   Int
+  Funcionario     Funcionario @relation(fields: [funcionarioId], references: [id])
+  dataFeriado     DateTime
+  dataCompensacao DateTime
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deletedAt       DateTime?
+
+
+  MotivosExclusao MotivosExclusao[]
+  EspelhoPonto    EspelhoPonto[]
+  @@map("compensacoes_feriados")
+}
+
+model Ocorrencia {
+  id        Int      @id @default(autoincrement())
+  clienteId Int
+  Cliente   Cliente  @relation(fields: [clienteId], references: [id])
+  codigo    Int
+  descricao String
+  tipo      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Afastamentos Afastamento[]
+  @@map("ocorrencias")
+}
+
+model Afastamento {
+  id            Int         @id @default(autoincrement())
+  empresaId     Int
+  Empresa       Empresa     @relation(fields: [empresaId], references: [id])
+  funcionarioId Int
+  Funcionario   Funcionario @relation(fields: [funcionarioId], references: [id])
+  dataInicial   DateTime
+  dataFinal     DateTime
+  fileUrl       String?
+  ocorrenciaId  Int
+  Ocorrencia    Ocorrencia  @relation(fields: [ocorrenciaId], references: [id])
+  justificativa String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+
+  MotivosExclusao MotivosExclusao[]
+  EspelhoPonto    EspelhoPonto[]
+  @@map("afastamentos")
+}
+
+model Calculo {
+  id            Int         @id @default(autoincrement())
+  empresaId     Int
+  Empresa       Empresa     @relation(fields: [empresaId], references: [id])
+  funcionarioId Int
+  Funcionario   Funcionario @relation(fields: [funcionarioId], references: [id])
+  registros     Json
+  periodo       Json
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  EspelhoPonto EspelhoPonto[]
+  @@map("calculos")
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Features
+
+model HistoricoImportacao {
+  id        Int       @id @default(autoincrement())
+  cod       String
+  data      DateTime
+  hora      String
+  descricao String
+  progresso Int
+  log       Json
+  status    StatusAfd
+  empresaId Int
+  Empresa   Empresa   @relation(fields: [empresaId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@map("historico_importacoes")
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// FPGPOI
+/// espelho lte = 2022-01-01 gte = 2022-01-31 = Periodo
+
+model EspelhoPonto {
+  id                   Int                 @id @default(autoincrement())
+  calculoId            Int
+  Calculo              Calculo             @relation(fields: [calculoId], references: [id])
+  funcionarioId        Int
+  Funcionario          Funcionario         @relation(fields: [funcionarioId], references: [id])
+  regraCalculoId       Int
+  RegraCalculo         RegrasCalculo        @relation(fields: [regraCalculoId], references: [id])
+  data                 String
+  ent1                 String?
+  sai1                 String?
+  ent2                 String?
+  sai2                 String?
+  ent3                 String?
+  sai3                 String?
+  ent4                 String?
+  sai4                 String?
+  ent5                 String?
+  sai5                 String?
+  horasExtra           String              @default("00:00")
+  h50                  String              @default("00:00")
+  h70                  String              @default("00:00")
+  h75                  String              @default("00:00")
+  h100                 String              @default("00:00")
+  h120                 String              @default("00:00")
+  faltas               String              @default("00:00")
+  horasTrabalhadas     String              @default("00:00")
+  adicionalNoturno     String              @default("00:00")
+  sobreAviso           String              @default("00:00")
+  afastamentoId        Int?
+  Afastamento          Afastamento?        @relation(fields: [afastamentoId], references: [id])
+  compensacaoFeriadoId Int?
+  CompensacaoFeriado   CompensacaoFeriado? @relation(fields: [compensacaoFeriadoId], references: [id])
+  horasAbonadas        String              @default("00:00")
+  abonoId              Int?
+  Abono                Abono?              @relation(fields: [abonoId], references: [id])
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  @@map("espelho_ponto")
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Enumerados
+
+enum SN {
+  S
+  N
+}
+
+enum Sexo {
+  M
+  F
+}
+
+enum Conexao {
+  Local
+  Web
+}
+
+enum StatusAfd {
+  PENDENTE
+  PROCESSANDO
+  CONCLUIDO
+  INCOMPLETO
+  ERRO
+}
