@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-elara-postgres
+
+spec:
+  selector:
+    matchLabels:
+      app: elara-postgres
+  
+  template:
+    metadata:
+      labels:
+        app: elara-postgres
+    
+    spec:
+      containers:
+        - name: elara-postgres
+          image: postgres:15.0
+
+          ports:
+            - containerPort: 5432
+
+          env:
+            - name: POSTGRES_USER
+              value: elara-user
+            - name: POSTGRES_PASSWORD
+              value: elara-pass
+            - name: POSTGRES_DB
+              value: elara
